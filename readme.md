@@ -10,7 +10,7 @@ This is because we cannot open a socket with the same source address and port by
 
 ### Socket options
 
-When we create a new TCP socket on a Linux, we can set options that affect the behaviour of the socket. For example, one of these options is SO_REUSEPORT, which allows multiple sockets to bind to the same IP address and port. With this feature, the Linux kernel distributes incoming requests across all the sockets that share the same address and port combination, getting a load balancing inside the Kernel.
+When we create a new TCP socket on Linux, we can set options that affect the behaviour of the socket. For example, one of these options is `SO_REUSEPORT`, which allows multiple sockets to bind to the same IP address and port. With this feature, the Linux kernel distributes incoming requests across all the sockets that share the same address and port combination, getting a load balancing inside the Kernel.
 
 > SO_REUSEPORT
 > 
@@ -22,7 +22,7 @@ When we create a new TCP socket on a Linux, we can set options that affect the b
 
 ![](https://user-images.githubusercontent.com/8400576/127754771-6a789f00-7022-4602-a628-a3d124b43421.png)
 
-As we can notice, we not only obtain the super power to create more than one socket with the same IP: Port combination, we also obtain a kind of load balancer in the kernel mode.
+As we can notice, we not only get the super power to create more than one socket with the same IP: Port combination, but we also obtain a kind of load balancer in the kernel mode.
 
 ### Go sockets
 
@@ -35,7 +35,7 @@ func Listen(network, address string) (Listener, error) {
 }
 ```
 
-If we inspect `ListenConfig,` we can find the method `Control,` and the documentation says: <mark>If Control is not nil, it is called after creating the network connection but before binding it to the operating system.</mark>
+If we inspect `ListenConfig` we can find the method `Control` and the documentation says: <mark>If Control is not nil, it is called after creating the network connection but before binding it to the operating system.</mark>
 
 ```go
 // ListenConfig contains options for listening to an address.
@@ -50,7 +50,7 @@ type ListenConfig struct {
 
 The function `Control` receives the `syscall.RawConn` which is a raw network connection that has a method also called control (`Control(f func(fd uintptr))`) where it will invoke the function `f` on the underlying connection's file descriptor.
 
-Having the file descriptor we can use the `golang.org/x/sys/unix` package to set the socket options.
+Having the file descriptor, now we can use the `golang.org/x/sys/unix` package to set the socket options.
 
 ```go
 // fd -> the underlying connection's file descriptor.
@@ -76,9 +76,9 @@ var lc = net.ListenConfig{
 
 ### Security
 
-One question we might have at this point is, what about security? I mean, if we can open a socket with the same IP: Port of a specific app, for example, Nginx, we could hijack part of the requests that the kernel will send to us through the socket. Right?v
+One question we might have at this point is, what about security? I mean, if we can open a socket with the same IP: Port of a specific app, for example, Nginx, we could hijack part of the requests that the kernel will send to us through the socket. Right?
 
-Well, to prevent this "port hijacking," Linux has special limitations or mechanisms such as:
+Well, to prevent this "port hijacking," Linux has special protections or mechanisms to prevent these problems, such as:
 
 * Both sockets must have been created with the SO_REUSEPORT socket option. If there is a socket running without SO_REUSEPORT and we try to create another socket even with the SO_REUSEPORT socket option, it will fail with the error `already in use`. 
 * All sockets that want to listen to the same IP and port combination must have the same effective userID. For example, if you want to hijack the Nginx port and it is running under the ownership of the user Pepito, a new process can listen to the same port only if it is also owned by the user Pepito. So one user cannot "steal" ports of other users.
