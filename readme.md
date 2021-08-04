@@ -1,6 +1,6 @@
 # Socket sharding in Linux with Go
 
-How many times that we were working on the terminal with multiple tabs and we launched an HTTP server, and then we forgot that the server was already being executed, and we tried to relaunch it from another tab getting the known error:
+I bet there have been many times that you were working on the terminal with multiple tabs and you launched an HTTP server, and then you forgot that the server was already being executed, and then you tried to relaunch it from another tab getting the known error:
 
 ```bash
 go run main.go 
