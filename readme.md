@@ -83,9 +83,10 @@ Well, to prevent this "port hijacking," Linux has special protections or mechani
 * Both sockets must have been created with the SO_REUSEPORT socket option. If there is a socket running without SO_REUSEPORT and we try to create another socket even with the SO_REUSEPORT socket option, it will fail with the error `already in use`. 
 * All sockets that want to listen to the same IP and port combination must have the same effective userID. For example, if you want to hijack the Nginx port and it is running under the ownership of the user Pepito, a new process can listen to the same port only if it is also owned by the user Pepito. So one user cannot "steal" ports of other users.
 
-As we can read above, with `SO_REUSEPORT,` we could run multiple instances of our app to take advantage of our resources without the necessity of running a proxy in front of them. Having multiple threads/processes/instances will have better performance than having a single one.
+The following are super simple use cases for `SO_REUSEPORT`, of course omitting all the complexity required to achieve them:
 
-Also, `SO_REUSEPORT` can give us the possibility of zero downtime updates. Due to we can launch a new instance to receive requests and, after that, kill the old one with a graceful shutdown.
+* We could run multiple instances of our app to take advantage of our resources without the necessity of running a proxy in front of them (to have an ultra simple LB). Having multiple threads/processes/instances will have better performance than having a single one.
+* Can give us the possibility of zero downtime updates. Since we can launch a new instance to receive requests and, after that, kill the old one with a graceful shutdown.
 
 ### Simple demo
 
